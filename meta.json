@@ -3,24 +3,50 @@
  */
 {
     //Required. Inputs the module expects.
-    "inputs": [
-        //e.g.
-        /*
-        {
-            "id": "from",
-            "title":"From"
-        }
-        */
-    ],
+    "inputs": [{
+            "id"          : "spreadsheet_id",
+            "title"       : "Sheet ID",
+            "description" : "Found in URL of worksheet"
+        }, {
+            "id"      : "text"
+            , "title" : "Text"
+            , "description" : "The text to analyze"
+        }, {
+            "id"    : "source_sheet",
+            "title" : "Source Sheet Index",
+            "description" : "The sheet to use for matching"
+        }, {
+            "id"    : "dest_sheet",
+            "title" : "Dest Sheet Index",
+            "description" : "The sheet to use for logging"
+        }, {
+            "id"    : "startRow",
+            "title" : "Start Row",
+            "description" : "Row to start reading from (defaults to 1)"
+        }, {
+            "id"    : "startColumn",
+            "title" : "Start Column",
+            "description" : "Column to start reading from (defaults to 1)"
+        }, {
+            "id"    : "numRows",
+            "title" : "Last Row",
+            "description" : "Total rows to read. If not specified, will continue until end of sheet"
+        }, {
+            "id"    : "numColumns",
+            "title" : "Last Column", 
+            "description" : "Total columns to read. If not specified, will continue until end of sheet"
+        }],
     //Required. Outputs the module emits.
-    "outputs": [
-      //e.g.
-      /*
-        {
-            "id": "from",
-            "title":"From"
-        }
-      */
-    ],
-    "title": "Google Sheets Lookup & Compute" /* Required.A display name for the module */
+    "outputs": [{
+        "id"      : "value"
+        , "title" : "Value"
+    }],
+    "providers": [{
+        "name": "google",
+        "scopes": [
+            "https://spreadsheets.google.com/feeds/"
+        ]
+    }],
+    "icon": "google",
+    "title": "Google Sheets Lookup & Compute" /* Required. A display name for the module */
 }

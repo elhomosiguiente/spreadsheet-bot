@@ -1,12 +1,18 @@
 {
-    "name": "google-sheets-lookup-compute",
-    "version": "0.0.1",
-    "description": "",
-    "main": "index.js",
-    "author": "Dexter",
-    "license": "ISC",
-    "private": true,
-    "dependencies": {
-        "lodash": "^3.9.3"
-    }
+  "name": "google-sheets-lookup-compute",
+  "version": "0.0.1",
+  "description": "Compare an incoming value against a series of regular expressions in a google sheet, copy the row and replace the backreferences",
+  "main": "index.js",
+  "author": "Dexter",
+  "license": "ISC",
+  "private": true,
+  "dependencies": {
+    "async": "^1.5.2",
+    "edit-google-spreadsheet": "^0.2.21",
+    "lodash": "^3.9.3"
+  },
+  "repository": {
+    "type" : "git",
+    "url"  : "https://github.com/ilkovich/google-sheets-lookup-compute"
+  }
 }
