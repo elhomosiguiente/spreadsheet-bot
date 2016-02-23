@@ -28,7 +28,6 @@ module.exports = {
     , getResults: function(sheet, rowID, attempts) {
         var self = this, increment=500;
         attempts = attempts || 1;
-        console.log('attempts', attempts);
         sheet.receive({getValues: true}, function(err, rows) {
             var value = _.get(rows, '['+rowID+"]['3']");
             if(!value && attempts < 5) {
@@ -46,10 +45,8 @@ module.exports = {
         var self = this;
 
         for(var i=1; i<matches.length; i++) {
-            console.log('row[1]', row[1]);
             row[0] = matches[0];
             row[1] = row[1].replace(new RegExp('\\\\'+i,'g'), matches[i]);
-            console.log('row[1]', row[1], matches[i], "\\"+i,'g');
         }
 
         row.unshift((new Date()).toUTCString());
@@ -64,7 +61,6 @@ module.exports = {
         });
     }
     , parse: function(step, source, dest) {
-        console.log('parse', source == dest);
         var startRow      = step.input('startRow', 1).first() || 1
           , startColumn   = step.input('startColumn', 1).first() || 1
           , numRows       = step.input('numRows').first()
@@ -78,14 +74,12 @@ module.exports = {
 
             var values = self.pickSheetData(rows, startRow, startColumn, numRows, numColumns);
 
-            console.log('source rows', values);
 
             _.each(values, function(i) {
                 var matches = text.match(new RegExp(i[0], 'i'));
 
                 if(matches) {
                     matches = Array.prototype.slice.call(matches);
-                    console.log('matches',matches);
                     self.add(matches, i, dest);
                     return false;
                 }
