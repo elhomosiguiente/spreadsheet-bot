@@ -2,6 +2,11 @@ var _           = require('lodash')
   , Spreadsheet = require('edit-google-spreadsheet')
   , assert      = require('assert')
   , async       = require('async')
+  //max rows to keep in the log
+  , MAX_ROWS    = 50
+
+  //When rolling logs move the last KEEP_ROWS to the top 
+  , KEEP_ROWS   = 10
 ;
 
 module.exports = {
@@ -28,8 +33,13 @@ module.exports = {
     , getResults: function(sheet, rowID, attempts) {
         var self = this, increment=500;
         attempts = attempts || 1;
-        sheet.receive({getValues: true}, function(err, rows) {
-            var value = _.get(rows, '['+rowID+"]['3']");
+        sheet.receive({getValues: true}, function(err, rows, info) {
+            //get the row
+            var value = _.values(_.get(rows, '['+rowID+"]"));
+
+            //get the last column
+            value = _.get(value, ""+(value.length-1));
+
             if(!value && attempts < 5) {
                 return setTimeout(self.getResults.bind(self, sheet, rowID, ++attempts), (attempts-1) * increment);
             } else if(attempts >= 5) {
@@ -41,23 +51,48 @@ module.exports = {
             });
         });
     }
-    , add: function(/*array*/ matches, row, dest) {
+    , add: function(/*array*/ text, matches, row, dest) {
         var self = this;
 
+        console.log('add', matches);
+
+        
         for(var i=1; i<matches.length; i++) {
-            row[0] = matches[0];
             row[1] = row[1].replace(new RegExp('\\\\'+i,'g'), matches[i]);
         }
 
+        row.unshift(text);
         row.unshift((new Date()).toUTCString());
+        console.log('row', row);
 
         dest.receive(function(err, rows, info) {
             var data = {};
-            data[info.lastRow+1] = [row];
-            dest.add(data);
-            dest.send(function(err) { 
-                self.getResults(dest, info.lastRow+1);
-            });
+            var rowToUse = info.lastRow + 1;
+            if(rowToUse > MAX_ROWS) {
+                _.each(rows, function(val, key) {
+                    //respect the header row
+                    var rownum = parseInt(key), overwriteRow;
+                    if(rownum > (MAX_ROWS - KEEP_ROWS)) {
+                        overwriteRow = MAX_ROWS-Math.min(MAX_ROWS,rownum)+2;
+                        console.log('overwriteRow', overwriteRow, rownum, key, rows[key]);
+                        rows[overwriteRow+""] = rows[key];
+                    }
+
+                    if(key !== '1')
+                        rows[key] = [_.map(val, function() { return ''; })];
+                });
+                rows[KEEP_ROWS+2] = [row];
+                console.log(rows);
+                dest.add(rows);
+                return dest.send(function(err) { 
+                });
+            } else {
+                data[rowToUse] = [row];
+                dest.add(data);
+                dest.send(function(err) { 
+                    self.getResults(dest, rowToUse);
+                });
+            }
         });
     }
     , parse: function(step, source, dest) {
@@ -80,7 +115,7 @@ module.exports = {
 
                 if(matches) {
                     matches = Array.prototype.slice.call(matches);
-                    self.add(matches, i, dest);
+                    self.add(text, matches, i, dest);
                     return false;
                 }
             });
