@@ -58,7 +58,12 @@ module.exports = {
 
         
         for(var i=1; i<matches.length; i++) {
-            row[1] = row[1].replace(new RegExp('\\\\'+i,'g'), matches[i]);
+            console.log(matches[i], matches[i].replace(/"/g, '\\"'));
+            row[1] = row[1]
+                        .replace(new RegExp('\\\\'+i,'g'), matches[i]
+                                                              .replace(/[\u2018\u2019]/g, "'")
+                                                              .replace(/[\u201C\u201D]/g, '"')
+                                                              .replace(/"/g, '""'));
         }
 
         row.unshift(text);
