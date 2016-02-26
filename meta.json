@@ -12,6 +12,14 @@
             , "title" : "Text"
             , "description" : "The text to analyze"
         }, {
+            "id"      : "user_id"
+            , "title" : "User Id"
+            , "description" : "The user id sending the message"
+        }, {
+            "id"      : "channel_id"
+            , "title" : "Channel Id"
+            , "description" : "The channel associated with the message"
+        }, {
             "id"    : "source_sheet",
             "title" : "Source Sheet Index",
             "description" : "The sheet to use for matching"
@@ -19,22 +27,6 @@
             "id"    : "dest_sheet",
             "title" : "Dest Sheet Index",
             "description" : "The sheet to use for logging"
-        }, {
-            "id"    : "startRow",
-            "title" : "Start Row",
-            "description" : "Row to start reading from (defaults to 1)"
-        }, {
-            "id"    : "startColumn",
-            "title" : "Start Column",
-            "description" : "Column to start reading from (defaults to 1)"
-        }, {
-            "id"    : "numRows",
-            "title" : "Last Row",
-            "description" : "Total rows to read. If not specified, will continue until end of sheet"
-        }, {
-            "id"    : "numColumns",
-            "title" : "Last Column", 
-            "description" : "Total columns to read. If not specified, will continue until end of sheet"
         }],
     //Required. Outputs the module emits.
     "outputs": [{
@@ -48,5 +40,5 @@
         ]
     }],
     "icon": "google",
-    "title": "Google Sheets Lookup & Compute" /* Required. A display name for the module */
+    "title": "SpreadsheetBot: Lookup & Compute" /* Required. A display name for the module */
 }

@@ -2,6 +2,7 @@ var _           = require('lodash')
   , Spreadsheet = require('edit-google-spreadsheet')
   , assert      = require('assert')
   , async       = require('async')
+  , _           = require('lodash')
   //max rows to keep in the log
   , MAX_ROWS    = 50
 
@@ -51,24 +52,33 @@ module.exports = {
             });
         });
     }
-    , add: function(/*array*/ text, matches, row, dest) {
-        var self = this;
-
-        console.log('add', matches);
+    /**
+     *  add a row to the log, rolling it if necessary
+     *
+     * @param {Object} vars     - The username that sent the message
+     * @param {String} text     - The text that we received
+     * @param {Array}  matches  - the matches that resulted from the regular exp search 
+     */
+    , add: function(vars, text, matches, row, dest) {
+        var self = this, match;
 
         
-        for(var i=1; i<matches.length; i++) {
-            console.log(matches[i], matches[i].replace(/"/g, '\\"'));
-            row[1] = row[1]
-                        .replace(new RegExp('\\\\'+i,'g'), matches[i]
-                                                              .replace(/[\u2018\u2019]/g, "'")
-                                                              .replace(/[\u201C\u201D]/g, '"')
-                                                              .replace(/"/g, '""'));
+        for(var i=0; i<matches.length; i++) {
+            match = matches[i]
+                      .replace(/[\u2018\u2019]/g, "'")
+                      .replace(/[\u201C\u201D]/g, '"')
+                      .replace(/"/g, '""')
+            ;
+
+            row[1] = row[1].replace(new RegExp('\\\\'+i,'g'), match);
         }
+
+        _.each(vars, function(val, key) {
+            row[1] = row[1].replace(new RegExp('%'+key+'%', 'ig'), val);
+        });
 
         row.unshift(text);
         row.unshift((new Date()).toUTCString());
-        console.log('row', row);
 
         dest.receive(function(err, rows, info) {
             var data = {};
@@ -79,7 +89,6 @@ module.exports = {
                     var rownum = parseInt(key), overwriteRow;
                     if(rownum > (MAX_ROWS - KEEP_ROWS)) {
                         overwriteRow = MAX_ROWS-Math.min(MAX_ROWS,rownum)+2;
-                        console.log('overwriteRow', overwriteRow, rownum, key, rows[key]);
                         rows[overwriteRow+""] = rows[key];
                     }
 
@@ -87,7 +96,6 @@ module.exports = {
                         rows[key] = [_.map(val, function() { return ''; })];
                 });
                 rows[KEEP_ROWS+2] = [row];
-                console.log(rows);
                 dest.add(rows);
                 return dest.send(function(err) { 
                 });
@@ -101,18 +109,16 @@ module.exports = {
         });
     }
     , parse: function(step, source, dest) {
-        var startRow      = step.input('startRow', 1).first() || 1
-          , startColumn   = step.input('startColumn', 1).first() || 1
-          , numRows       = step.input('numRows').first()
-          , numColumns    = step.input('numColumns').first()
-          , text          = step.input('text').first()
+        var text          = step.input('text').first()
+          , user_id       = step.input('user_id').first()
+          , channel_id    = step.input('channel_id').first()
           , self          = this
         ;
 
         source.receive({getValues: true}, function (error, rows) {
             if(error) return self.fail(error);
 
-            var values = self.pickSheetData(rows, startRow, startColumn, numRows, numColumns);
+            var values = self.pickSheetData(rows, 1, 1);
 
 
             _.each(values, function(i) {
@@ -120,7 +126,7 @@ module.exports = {
 
                 if(matches) {
                     matches = Array.prototype.slice.call(matches);
-                    self.add(text, matches, i, dest);
+                    self.add({user_id: user_id, channel_id:channel_id}, text, matches, i, dest);
                     return false;
                 }
             });

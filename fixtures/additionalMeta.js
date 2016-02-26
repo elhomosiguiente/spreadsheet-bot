@@ -74,7 +74,9 @@ module.exports = _.merge({
             input: {
                 //Replace VAR1 with the name of an expected input, and add more inputs as needed.
                 spreadsheet_id : '117M1ade8ZbpigiKgve25SM7WCm5Q_taHuggQDSCfC18',
-                text           : 'Test'
+                text           : 'Hello',
+                user_id        : 'U0012334',
+                channel_id     : 'C0012345'
             }
         }
     }
