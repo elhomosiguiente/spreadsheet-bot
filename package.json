@@ -1,5 +1,5 @@
 {
-  "name": "google-sheets-lookup-compute",
+  "name": "spreadsheet-bot",
   "version": "0.0.1",
   "description": "Compare an incoming value against a series of regular expressions in a google sheet, copy the row and replace the backreferences",
   "main": "index.js",
@@ -13,6 +13,6 @@
   },
   "repository": {
     "type" : "git",
-    "url"  : "https://github.com/ilkovich/google-sheets-lookup-compute"
+    "url"  : "https://github.com/ilkovich/spreadsheet-bot"
   }
 }
