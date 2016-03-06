@@ -4,34 +4,38 @@
 {
     //Required. Inputs the module expects.
     "inputs": [{
-            "id"          : "spreadsheet_id",
-            "title"       : "Sheet ID",
-            "description" : "Found in URL of worksheet"
-        }, {
-            "id"      : "text"
-            , "title" : "Text"
-            , "description" : "The text to analyze"
-        }, {
-            "id"      : "user_id"
-            , "title" : "User Id"
-            , "description" : "The user id sending the message"
-        }, {
-            "id"      : "channel_id"
-            , "title" : "Channel Id"
-            , "description" : "The channel associated with the message"
-        }, {
-            "id"    : "source_sheet",
-            "title" : "Source Sheet Index",
-            "description" : "The sheet to use for matching"
-        }, {
-            "id"    : "dest_sheet",
-            "title" : "Dest Sheet Index",
-            "description" : "The sheet to use for logging"
-        }],
+        "id"          : "spreadsheet_id",
+        "title"       : "Sheet ID",
+        "description" : "Found in URL of worksheet"
+    }, {
+        "id"      : "text"
+        , "title" : "Text"
+        , "description" : "The text to analyze"
+    }, {
+        "id"      : "user_id"
+        , "title" : "User Id"
+        , "description" : "The user id sending the message"
+    }, {
+        "id"      : "channel_id"
+        , "title" : "Channel Id"
+        , "description" : "The channel associated with the message"
+    }, {
+        "id"    : "source_sheet",
+        "title" : "Source Sheet Index",
+        "description" : "The sheet to use for matching"
+    }, {
+        "id"    : "dest_sheet",
+        "title" : "Dest Sheet Index",
+        "description" : "The sheet to use for logging"
+    }],
     //Required. Outputs the module emits.
     "outputs": [{
         "id"      : "value"
         , "title" : "Value"
+    }, {
+        "id"      : "row",
+        "title"   : "Row",
+        "description" : "The entire row as found in the logger"
     }],
     "providers": [{
         "name": "google",

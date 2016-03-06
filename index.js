@@ -36,10 +36,9 @@ module.exports = {
         attempts = attempts || 1;
         sheet.receive({getValues: true}, function(err, rows, info) {
             //get the row
-            var value = _.values(_.get(rows, '['+rowID+"]"));
-
-            //get the last column
-            value = _.get(value, ""+(value.length-1));
+            var values = _.values(_.get(rows, '['+rowID+"]"))
+              , value = _.get(values, "3")
+            ;
 
             if(!value && attempts < 5) {
                 return setTimeout(self.getResults.bind(self, sheet, rowID, ++attempts), (attempts-1) * increment);
@@ -48,7 +47,8 @@ module.exports = {
             }
 
             self.complete({
-                value: value
+                value: value,
+                row: values
             });
         });
     }
