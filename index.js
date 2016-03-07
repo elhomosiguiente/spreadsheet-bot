@@ -3,6 +3,7 @@ var _           = require('lodash')
   , assert      = require('assert')
   , async       = require('async')
   , _           = require('lodash')
+  , q           = require('q')
   //max rows to keep in the log
   , MAX_ROWS    = 50
 
@@ -83,22 +84,46 @@ module.exports = {
         dest.receive(function(err, rows, info) {
             var data = {};
             var rowToUse = info.lastRow + 1;
+            var _rows = {};
+
             if(rowToUse > MAX_ROWS) {
                 _.each(rows, function(val, key) {
                     //respect the header row
                     var rownum = parseInt(key), overwriteRow;
                     if(rownum > (MAX_ROWS - KEEP_ROWS)) {
                         overwriteRow = MAX_ROWS-Math.min(MAX_ROWS,rownum)+2;
-                        rows[overwriteRow+""] = rows[key];
+                        _rows[overwriteRow+""] = _.pick(rows[key], ['1', '2', '3', '4']);
                     }
 
-                    if(key !== '1')
-                        rows[key] = [_.map(val, function() { return ''; })];
+                    //if(key !== '1')
+                    //    rows[key] = [_.map(val, function() { return ''; })];
                 });
-                rows[KEEP_ROWS+2] = [row];
-                dest.add(rows);
-                return dest.send(function(err) { 
-                });
+                _rows[KEEP_ROWS+2] = [row];
+                dest.add(_rows);
+
+                q.ninvoke(dest, 'metadata', {
+                      title: 'Logs',
+                      rowCount: KEEP_ROWS+2,
+                      colCount: 4
+                  })
+                  .then(function() {
+                    dest.metadata({
+                        title: 'Logs',
+                        rowCount: MAX_ROWS+10,
+                        colCount: 4
+                    });
+                  })
+                  .then(function() {
+                      dest.send({ autoSize: true });
+                  })
+                  .then(function(err) {
+                      //hack to wait for sheet to reset
+                      setTimeout(function() {
+                          self.getResults(dest, KEEP_ROWS+2);
+                      }, 1000);
+                  })
+                  .catch(self.fail.bind(self))
+                ;
             } else {
                 data[rowToUse] = [row];
                 dest.add(data);
